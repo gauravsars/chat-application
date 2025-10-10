@@ -50,7 +50,7 @@ public class ChatService {
     @Transactional
     public MessageView persistMessage(Long conversationId, ChatUser sender, String content) {
         Conversation conversation = conversationRepository.findById(conversationId)
-                .orElseThrow(() -> new IllegalArgumentException("Conversation not found: " + conversationId));
+                .orElseGet(() -> createConversation(conversationId));
 
         conversation.getParticipants().add(sender);
 
@@ -64,6 +64,12 @@ public class ChatService {
                 saved.getContent(),
                 saved.getSentAt()
         );
+    }
+
+    private Conversation createConversation(Long conversationId) {
+        Conversation conversation = new Conversation("Conversation " + conversationId);
+        conversation.setId(conversationId);
+        return conversationRepository.save(conversation);
     }
 
     public List<Message> getConversationMessages(Long conversationId) {
