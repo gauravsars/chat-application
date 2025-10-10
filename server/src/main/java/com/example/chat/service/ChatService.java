@@ -32,6 +32,17 @@ public class ChatService {
         return userRepository.findById(id);
     }
 
+    @Transactional
+    public ChatUser findOrCreateUser(Long id) {
+        return userRepository.findById(id).orElseGet(() -> {
+            ChatUser newUser = new ChatUser();
+            newUser.setId(id);
+            newUser.setUsername("user_" + id);
+            newUser.setDisplayName("User " + id);
+            return userRepository.save(newUser);
+        });
+    }
+
     public Optional<Conversation> findConversation(Long id) {
         return conversationRepository.findById(id);
     }
@@ -40,6 +51,8 @@ public class ChatService {
     public MessageView persistMessage(Long conversationId, ChatUser sender, String content) {
         Conversation conversation = conversationRepository.findById(conversationId)
                 .orElseThrow(() -> new IllegalArgumentException("Conversation not found: " + conversationId));
+
+        conversation.getParticipants().add(sender);
 
         Message message = new Message(conversation, sender, content);
         Message saved = messageRepository.save(message);

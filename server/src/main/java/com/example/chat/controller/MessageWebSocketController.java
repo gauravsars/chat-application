@@ -28,8 +28,7 @@ public class MessageWebSocketController {
     @MessageMapping("/chat.send")
     @SendTo("/topic/public")
     public MessageView sendMessage(@Payload ChatMessagePayload payload) {
-        ChatUser sender = chatService.findUser(payload.getSenderId())
-                .orElseThrow(() -> new IllegalArgumentException("User not found: " + payload.getSenderId()));
+        ChatUser sender = chatService.findOrCreateUser(payload.getSenderId());
         MessageView view = chatService.persistMessage(payload.getConversationId(), sender, payload.getContent());
         log.debug("Broadcasting message {} from user {}", view.getId(), sender.getUsername());
         messagingTemplate.convertAndSend("/topic/conversations/" + view.getConversationId(), view);

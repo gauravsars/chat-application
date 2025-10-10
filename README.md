@@ -25,7 +25,33 @@ Located in [`server/`](server/). Key features:
 * WebSocket controller that persists incoming messages and broadcasts them to subscribers via `/topic/conversations/{id}`.
 * Actuator endpoints enabled for health checks in a load-balanced environment.
 
-Run locally:
+### Configure PostgreSQL
+
+1. **Start PostgreSQL** – ensure a PostgreSQL server is running. A quick local option is Docker:
+
+   ```bash
+   docker run --name chat-postgres -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres:15
+   ```
+
+2. **Create database & user** – connect with `psql` (or any SQL client) and create a dedicated database and login role:
+
+   ```sql
+   CREATE DATABASE chatapp;
+   CREATE USER chatapp WITH PASSWORD 'secret';
+   GRANT ALL PRIVILEGES ON DATABASE chatapp TO chatapp;
+   ```
+
+3. **Update credentials** – either adjust [`server/src/main/resources/application.properties`](server/src/main/resources/application.properties) or override them with environment variables when running the Spring Boot app:
+
+   ```bash
+   export SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/chatapp
+   export SPRING_DATASOURCE_USERNAME=chatapp
+   export SPRING_DATASOURCE_PASSWORD=secret
+   ```
+
+   If your PostgreSQL instance requires SSL or a non-default schema, append the relevant JDBC parameters (e.g. `?sslmode=require`).
+
+### Run locally
 
 ```bash
 cd server
