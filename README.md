@@ -33,9 +33,8 @@ userID : 4
 
 For 1000 to 10000 users with 10k-20k messages per day single web socket server is more then sufficient which is the scope of this chat application. 
 
-[React SPA]  --HTTP/WebSocket-->  [Spring Boot API + STOMP broker]  --JPA-->  [PostgreSQL] [users, conversations, conversations_partner , messages, archived_messages]
-                                          |
-                                          +--> Nginx (reverse proxy / load balancer)  [If required can be plugged] For users  >  10000 (Nginx not required)
+
+Tech - Stack
 ```
 
 * **Backend:** Spring Boot 3, Spring Security
@@ -49,9 +48,9 @@ For 1000 to 10000 users with 10k-20k messages per day single web socket server i
 * REST endpoint to fetch conversation history (`/api/conversations/{id}/messages`).
 * Authentication endpoints for registering (`POST /api/auth/register`) and logging in (`POST /api/auth/login`) users with numeric IDs and passwords.
 * WebSocket controller that persists incoming messages, ensures both participants already exist, and broadcasts them to subscribers via `/topic/conversations/{id}`.
+```
 
-
-### Configure PostgreSQL
+### Database Configure PostgreSQL
 
 1. **Create database & user** – connect with `psql` (or any SQL client) and create a dedicated database and login role:
 
@@ -59,9 +58,7 @@ For 1000 to 10000 users with 10k-20k messages per day single web socket server i
    CREATE DATABASE chatapp;
    CREATE USER chatapp WITH PASSWORD 'secret';
    GRANT ALL PRIVILEGES ON DATABASE chatapp TO chatapp;
-   ```
 
-   
 
 ### Authentication Flow
 
