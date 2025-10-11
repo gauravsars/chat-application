@@ -117,6 +117,13 @@ The schema ensures third normal form by separating user identities, conversation
 
 ## Scaling Considerations
 
+For 1000 to 10000 users with 10k-20k messages per day single web socket server is more then sufficient which is the scope of this chat application. 
+For Upto 10K users (assuming sending 50k messages per day) , single web socket node server will be sufficient handle this much amount of load.
+
+Also Database Postgreql Would be sufficient to store these many messages. However if app is serving 10k messages per day then after some days say 1 month , we can transfer the data into historical_messages 
+table. 
+When traffic goes large , say 50k messages are exchanged per day. Then we can consider adding load-balancer and should consider multi node web socket server.
+
 Introduction of load balancer for directing traffic to multiple web socket server nodes 
 
 <img width="629" height="278" alt="image" src="https://github.com/user-attachments/assets/9dd8917c-1305-4538-a2aa-40c08e47c223" />
