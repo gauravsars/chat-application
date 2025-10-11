@@ -1,47 +1,38 @@
 # Chat Application
 
-Login To Chat System
-image
+Solution Provided For Below Business/User Requirement :
 
-For New User , Register your UserId
-image
+Login To Chat System
+<img width="398" height="245" alt="image" src="https://github.com/user-attachments/assets/9dce07fd-88f7-4f65-8237-34315b8cb2e3" />
+
+
+Registration For New User
+<img width="397" height="278" alt="image" src="https://github.com/user-attachments/assets/2f89c4cf-2adb-40cc-8f97-86e75aa6589f" />
+
 
 One To One chat (Till last one month) with Particular selected UserID
-image
+<img width="416" height="463" alt="image" src="https://github.com/user-attachments/assets/de922f1f-0266-4eca-9373-9c58881a99d7" />
 
 
 
 
 
+A full-stack chat application designed for 1,000 concurrent web users. The backend is powered by Spring Boot with PostgreSQL and Hibernate, while the frontend uses React and Vite. Real-time messaging is handled over a single WebSocket (STOMP) server (Springboot webserver) that can sit behind an Nginx load balancer if required for scalability.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-A full-stack chat application designed for 1,000 concurrent web users. The backend is powered by Spring Boot with PostgreSQL and Hibernate, while the frontend uses React and Vite. Real-time messaging is handled over a single WebSocket (STOMP) server that can sit behind an Nginx load balancer.
+For 1000 to 10000 users with 5-10k messages per day single web socket server would suffice which is the scope of this app.
 
 ## Architecture Overview
 
-```
-[React SPA]  --HTTP/WebSocket-->  [Spring Boot API + STOMP broker]  --JPA-->  [PostgreSQL]
+[React SPA]  --HTTP/WebSocket-->  [Spring Boot API + STOMP broker]  --JPA-->  [PostgreSQL] [users, conversations, conversations_partner , messages, archived_messages]
                                           |
-                                          +--> Nginx (reverse proxy / load balancer)
+                                          +--> Nginx (reverse proxy / load balancer)  [If required can be plugged] For users  >  10000
 ```
 
 * **Backend:** Spring Boot 3, exposing REST endpoints for history and STOMP over WebSocket for live chat.
 * **Frontend:** React 18 single-page app bootstrapped with Vite.
-* **Database:** PostgreSQL with normalized tables for `users`, `conversations`, `conversation_participants`, and `messages`.
-* **WebSocket:** A single STOMP endpoint (`/ws-chat`) handles all socket connections; messages are routed to topic destinations per conversation, which is determined by the two participants in a direct chat.
-* **Load Balancing:** An example Nginx configuration is provided below to route HTTP and WebSocket traffic to the Spring Boot service.
+* **Database:** PostgreSQL with normalized tables for `users`, `conversations`, `conversation_participants`, and `messages` and archived_messages [ single db is sufficient for 10k users ]
+* **WebSocket:** A single STOMP endpoint (`/ws-chat`) handles all socket connections;
+* **Load Balancing:** An example Nginx configuration is provided m but not required for the current scope.
 
 ## Backend (Spring Boot)
 
@@ -159,8 +150,6 @@ server {
 
 * Enable sticky sessions in the load balancer if you scale the Spring Boot nodes horizontally, or externalize the STOMP broker (e.g., RabbitMQ) for full statelessness.
 * Tune `spring.datasource.hikari.maximum-pool-size` to accommodate database load for 1,000 users.
-* Use `management/health` for load balancer health checks.
 
-## License
 
-MIT
+
