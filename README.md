@@ -14,8 +14,11 @@ Registration For New User
 
 One To One chat (Till last one month) with Particular selected UserID
 
+userID : 3
 <img width="416" height="463" alt="image" src="https://github.com/user-attachments/assets/de922f1f-0266-4eca-9373-9c58881a99d7" />
 
+userID : 4
+<img width="295" height="347" alt="image" src="https://github.com/user-attachments/assets/818d4713-33ba-495a-a386-17be009c9c24" />
 
 Steps to Run : 
 
@@ -25,17 +28,16 @@ Steps to Run :
 4. Both user browsers, fetch the existing chat history, and subscribe to /topic/conversations/{conversationId}  [ompute the same deterministic conversation id using the two IDs]
 
 
-Application Design Notes : 
 
-A full-stack chat application designed for 1,000 concurrent web users. The backend is powered by Spring Boot with PostgreSQL and Hibernate, while the frontend uses React and Vite. Real-time messaging is handled over a single WebSocket (STOMP) server (Springboot webserver) that can sit behind an Nginx load balancer if required for scalability.
 
-For 1000 to 10000 users with 5-10k messages per day single web socket server would suffice which is the scope of this app.
 
 ## Architecture Overview
 
+For 1000 to 10000 users with 10k-20k messages per day single web socket server is more then sufficient which is the scope of this chat application. 
+
 [React SPA]  --HTTP/WebSocket-->  [Spring Boot API + STOMP broker]  --JPA-->  [PostgreSQL] [users, conversations, conversations_partner , messages, archived_messages]
                                           |
-                                          +--> Nginx (reverse proxy / load balancer)  [If required can be plugged] For users  >  10000
+                                          +--> Nginx (reverse proxy / load balancer)  [If required can be plugged] For users  >  10000 (Nginx not required)
 ```
 
 * **Backend:** Spring Boot 3, exposing REST endpoints for history and STOMP over WebSocket for live chat.
