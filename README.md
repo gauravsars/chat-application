@@ -1,5 +1,32 @@
 # Chat Application
 
+Login To Chat System
+image
+
+For New User , Register your UserId
+image
+
+One To One chat (Till last one month) with Particular selected UserID
+image
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 A full-stack chat application designed for 1,000 concurrent web users. The backend is powered by Spring Boot with PostgreSQL and Hibernate, while the frontend uses React and Vite. Real-time messaging is handled over a single WebSocket (STOMP) server that can sit behind an Nginx load balancer.
 
 ## Architecture Overview
