@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
@@ -26,12 +25,27 @@ public class MessageWebSocketController {
     }
 
     @MessageMapping("/chat.send")
-    @SendTo("/topic/public")
-    public MessageView sendMessage(@Payload ChatMessagePayload payload) {
+    public void sendMessage(@Payload ChatMessagePayload payload) {
+        if (payload.getSenderId() == null || payload.getRecipientId() == null) {
+            log.warn("Rejecting message without sender ({}) or recipient ({})", payload.getSenderId(), payload.getRecipientId());
+            return;
+        }
+
         ChatUser sender = chatService.findOrCreateUser(payload.getSenderId());
-        MessageView view = chatService.persistMessage(payload.getConversationId(), sender, payload.getContent());
-        log.debug("Broadcasting message {} from user {}", view.getId(), sender.getUsername());
+        ChatUser recipient = chatService.findOrCreateUser(payload.getRecipientId());
+
+        long expectedConversationId = chatService.directConversationId(sender.getId(), recipient.getId());
+        Long requestedConversationId = payload.getConversationId();
+        long conversationId = requestedConversationId != null && requestedConversationId == expectedConversationId
+                ? requestedConversationId
+                : expectedConversationId;
+
+        if (requestedConversationId != null && requestedConversationId != expectedConversationId) {
+            log.warn("Overriding conversation id {} with expected id {} for users {} and {}", requestedConversationId, expectedConversationId, sender.getId(), recipient.getId());
+        }
+
+        MessageView view = chatService.persistDirectMessage(conversationId, sender, recipient, payload.getContent());
+        log.debug("Broadcasting message {} between users {} and {}", view.getId(), sender.getId(), recipient.getId());
         messagingTemplate.convertAndSend("/topic/conversations/" + view.getConversationId(), view);
-        return view;
     }
 }

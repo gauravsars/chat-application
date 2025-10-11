@@ -47,18 +47,30 @@ public class ChatService {
         return conversationRepository.findById(id);
     }
 
-    @Transactional
-    public MessageView persistMessage(Long conversationId, ChatUser sender, String content) {
-        Conversation conversation = conversationRepository.findById(conversationId)
-                .orElseGet(() -> createConversation(conversationId));
+    public long directConversationId(long firstUserId, long secondUserId) {
+        long min = Math.min(firstUserId, secondUserId);
+        long max = Math.max(firstUserId, secondUserId);
+        long sum = min + max;
+        return ((sum) * (sum + 1)) / 2 + max;
+    }
 
-        conversation.getParticipants().add(sender);
+    @Transactional
+    public MessageView persistDirectMessage(Long conversationId, ChatUser sender, ChatUser recipient, String content) {
+        Conversation conversation = conversationRepository.findById(conversationId)
+                .orElseGet(() -> createDirectConversation(conversationId, sender, recipient));
+
+        if (!conversation.getParticipants().contains(sender)) {
+            conversation.getParticipants().add(sender);
+        }
+        if (!conversation.getParticipants().contains(recipient)) {
+            conversation.getParticipants().add(recipient);
+        }
 
         Message message = new Message(conversation, sender, content);
         Message saved = messageRepository.save(message);
         return new MessageView(
                 saved.getId(),
-                conversationId,
+                conversation.getId(),
                 sender.getId(),
                 sender.getDisplayName(),
                 saved.getContent(),
@@ -66,9 +78,13 @@ public class ChatService {
         );
     }
 
-    private Conversation createConversation(Long conversationId) {
-        Conversation conversation = new Conversation("Conversation " + conversationId);
+    private Conversation createDirectConversation(Long conversationId, ChatUser sender, ChatUser recipient) {
+        long first = Math.min(sender.getId(), recipient.getId());
+        long second = Math.max(sender.getId(), recipient.getId());
+        Conversation conversation = new Conversation("Direct chat " + first + "-" + second);
         conversation.setId(conversationId);
+        conversation.getParticipants().add(sender);
+        conversation.getParticipants().add(recipient);
         return conversationRepository.save(conversation);
     }
 

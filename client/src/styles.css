@@ -46,6 +46,23 @@ header h1 {
   background: #ef4444;
 }
 
+.user-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.user-inputs {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .user-inputs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 .user-section label {
   display: flex;
   flex-direction: column;
@@ -56,6 +73,12 @@ header h1 {
   padding: 0.5rem 0.75rem;
   border-radius: 0.5rem;
   border: none;
+}
+
+.conversation-hint {
+  margin: 0;
+  font-size: 0.85rem;
+  opacity: 0.75;
 }
 
 main {

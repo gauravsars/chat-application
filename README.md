@@ -13,7 +13,7 @@ A full-stack chat application designed for 1,000 concurrent web users. The backe
 * **Backend:** Spring Boot 3, exposing REST endpoints for history and STOMP over WebSocket for live chat.
 * **Frontend:** React 18 single-page app bootstrapped with Vite.
 * **Database:** PostgreSQL with normalized tables for `users`, `conversations`, `conversation_participants`, and `messages`.
-* **WebSocket:** A single STOMP endpoint (`/ws-chat`) handles all socket connections; messages are routed to topic destinations per conversation.
+* **WebSocket:** A single STOMP endpoint (`/ws-chat`) handles all socket connections; messages are routed to topic destinations per conversation, which is determined by the two participants in a direct chat.
 * **Load Balancing:** An example Nginx configuration is provided below to route HTTP and WebSocket traffic to the Spring Boot service.
 
 ## Backend (Spring Boot)
@@ -22,7 +22,7 @@ Located in [`server/`](server/). Key features:
 
 * Entities for users, conversations, and messages with normalized relationships.
 * REST endpoint to fetch conversation history (`/api/conversations/{id}/messages`).
-* WebSocket controller that persists incoming messages and broadcasts them to subscribers via `/topic/conversations/{id}`.
+* WebSocket controller that persists incoming messages, auto-provisions missing users/conversations, and broadcasts them to subscribers via `/topic/conversations/{id}`.
 * Actuator endpoints enabled for health checks in a load-balanced environment.
 
 ### Configure PostgreSQL
@@ -62,7 +62,7 @@ Configure `spring.datasource.*` properties to point to your PostgreSQL instance 
 
 ## Frontend (React + Vite)
 
-Located in [`client/`](client/). The SPA connects to the WebSocket endpoint and streams messages for a default conversation. Update the conversation and user IDs as needed.
+Located in [`client/`](client/). The SPA connects to the WebSocket endpoint and streams messages for whichever two user IDs you enter in the UI.
 
 Run locally:
 
@@ -73,6 +73,16 @@ npm run dev
 ```
 
 The development server proxies API calls to `http://localhost:8080` and expects the WebSocket endpoint at `ws://localhost:8080/ws-chat`.
+
+### Starting a direct conversation
+
+1. Open the React app (e.g. `npm run dev` → http://localhost:3000).
+2. Enter your numeric user ID in the **Your User ID** field. The backend will create the user automatically if it does not already exist.
+3. Enter the user ID you want to chat with in the **Chat Partner ID** field.
+4. Both browsers compute the same deterministic conversation id using the two IDs, fetch the existing history, and subscribe to `/topic/conversations/{conversationId}`.
+5. Send a message—if the conversation does not exist yet, the backend creates it on the fly and adds both participants so the other user immediately receives the message when they connect.
+
+> Conversation identifiers use the [Cantor pairing function](https://en.wikipedia.org/wiki/Pairing_function#Cantor_pairing_function): `((a + b) * (a + b + 1)) / 2 + max(a, b)` where `a` and `b` are the two user IDs. This guarantees both parties derive the same conversation topic regardless of who starts the chat.
 
 ## Database Schema
 
