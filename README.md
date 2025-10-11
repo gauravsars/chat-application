@@ -17,8 +17,14 @@ One To One chat (Till last one month) with Particular selected UserID
 <img width="416" height="463" alt="image" src="https://github.com/user-attachments/assets/de922f1f-0266-4eca-9373-9c58881a99d7" />
 
 
+Starting a direct conversation
+Open the React app (e.g. npm run dev → http://localhost:3000).
+Register a new account or sign in with an existing numeric user ID and password.
+After authentication, enter the user ID you want to chat with in the Chat partner ID field. Both browsers compute the same deterministic conversation id using the two IDs, fetch the existing history, and subscribe to /topic/conversations/{conversationId}.
+Send a message—if the conversation does not exist yet, the backend creates it the first time either participant posts and links both existing users.
 
 
+Application Design Notes : 
 
 A full-stack chat application designed for 1,000 concurrent web users. The backend is powered by Spring Boot with PostgreSQL and Hibernate, while the frontend uses React and Vite. Real-time messaging is handled over a single WebSocket (STOMP) server (Springboot webserver) that can sit behind an Nginx load balancer if required for scalability.
 
