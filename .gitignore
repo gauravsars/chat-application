@@ -1,0 +1,14 @@
+# Node
+client/node_modules
+client/dist
+
+# Java
+server/target
+server/.mvn
+server/mvnw
+server/mvnw.cmd
+
+# IDE
+.idea
+.vscode
+*.iml
