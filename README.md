@@ -22,7 +22,8 @@ Located in [`server/`](server/). Key features:
 
 * Entities for users, conversations, and messages with normalized relationships.
 * REST endpoint to fetch conversation history (`/api/conversations/{id}/messages`).
-* WebSocket controller that persists incoming messages, auto-provisions missing users/conversations, and broadcasts them to subscribers via `/topic/conversations/{id}`.
+* Authentication endpoints for registering (`POST /api/auth/register`) and logging in (`POST /api/auth/login`) users with numeric IDs and passwords.
+* WebSocket controller that persists incoming messages, ensures both participants already exist, and broadcasts them to subscribers via `/topic/conversations/{id}`.
 * Actuator endpoints enabled for health checks in a load-balanced environment.
 
 ### Configure PostgreSQL
@@ -60,9 +61,15 @@ cd server
 
 Configure `spring.datasource.*` properties to point to your PostgreSQL instance before running.
 
+### Authentication Flow
+
+1. **Register** – send `POST /api/auth/register` with a numeric `userId`, `password`, and optional `displayName`. Passwords are stored using BCrypt hashing.
+2. **Login** – send `POST /api/auth/login` with the same `userId`/`password` pair to retrieve the user profile for the session.
+3. **Messaging** – only authenticated users can publish chat messages; the backend rejects WebSocket payloads from unknown user IDs to avoid creating accounts implicitly.
+
 ## Frontend (React + Vite)
 
-Located in [`client/`](client/). The SPA connects to the WebSocket endpoint and streams messages for whichever two user IDs you enter in the UI.
+Located in [`client/`](client/). The SPA provides a login/registration screen, connects to the WebSocket endpoint, and streams messages for whichever two user IDs you select after signing in.
 
 Run locally:
 
@@ -77,10 +84,9 @@ The development server proxies API calls to `http://localhost:8080` and expects 
 ### Starting a direct conversation
 
 1. Open the React app (e.g. `npm run dev` → http://localhost:3000).
-2. Enter your numeric user ID in the **Your User ID** field. The backend will create the user automatically if it does not already exist.
-3. Enter the user ID you want to chat with in the **Chat Partner ID** field.
-4. Both browsers compute the same deterministic conversation id using the two IDs, fetch the existing history, and subscribe to `/topic/conversations/{conversationId}`.
-5. Send a message—if the conversation does not exist yet, the backend creates it on the fly and adds both participants so the other user immediately receives the message when they connect.
+2. Register a new account or sign in with an existing numeric user ID and password.
+3. After authentication, enter the user ID you want to chat with in the **Chat partner ID** field. Both browsers compute the same deterministic conversation id using the two IDs, fetch the existing history, and subscribe to `/topic/conversations/{conversationId}`.
+4. Send a message—if the conversation does not exist yet, the backend creates it the first time either participant posts and links both existing users.
 
 > Conversation identifiers use the [Cantor pairing function](https://en.wikipedia.org/wiki/Pairing_function#Cantor_pairing_function): `((a + b) * (a + b + 1)) / 2 + max(a, b)` where `a` and `b` are the two user IDs. This guarantees both parties derive the same conversation topic regardless of who starts the chat.
 
@@ -88,7 +94,7 @@ The development server proxies API calls to `http://localhost:8080` and expects 
 
 | Table | Columns |
 | ----- | ------- |
-| `users` | `id` (PK), `username` (unique), `display_name` |
+| `users` | `id` (PK), `username` (unique), `display_name`, `password_hash` |
 | `conversations` | `id` (PK), `title`, `created_at` |
 | `conversation_participants` | `conversation_id` (FK), `user_id` (FK) |
 | `messages` | `id` (PK), `conversation_id` (FK), `sender_id` (FK), `content`, `sent_at` |

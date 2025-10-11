@@ -20,13 +20,17 @@ public class ChatUser {
     @Column(nullable = false, length = 100)
     private String displayName;
 
+    @Column(nullable = false, length = 100)
+    private String passwordHash;
+
     public ChatUser() {
     }
 
-    public ChatUser(Long id, String username, String displayName) {
+    public ChatUser(Long id, String username, String displayName, String passwordHash) {
         this.id = id;
         this.username = username;
         this.displayName = displayName;
+        this.passwordHash = passwordHash;
     }
 
     public Long getId() {
@@ -51,6 +55,14 @@ public class ChatUser {
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
+    }
+
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 
     @Override

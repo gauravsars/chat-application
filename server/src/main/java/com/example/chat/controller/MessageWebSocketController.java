@@ -31,8 +31,15 @@ public class MessageWebSocketController {
             return;
         }
 
-        ChatUser sender = chatService.findOrCreateUser(payload.getSenderId());
-        ChatUser recipient = chatService.findOrCreateUser(payload.getRecipientId());
+        ChatUser sender;
+        ChatUser recipient;
+        try {
+            sender = chatService.requireUser(payload.getSenderId());
+            recipient = chatService.requireUser(payload.getRecipientId());
+        } catch (IllegalArgumentException ex) {
+            log.warn("Rejecting message for unknown user: {}", ex.getMessage());
+            return;
+        }
 
         long expectedConversationId = chatService.directConversationId(sender.getId(), recipient.getId());
         Long requestedConversationId = payload.getConversationId();
