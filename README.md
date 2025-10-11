@@ -17,11 +17,12 @@ One To One chat (Till last one month) with Particular selected UserID
 <img width="416" height="463" alt="image" src="https://github.com/user-attachments/assets/de922f1f-0266-4eca-9373-9c58881a99d7" />
 
 
-Starting a direct conversation
-Open the React app (e.g. npm run dev → http://localhost:3000).
-Register a new account or sign in with an existing numeric user ID and password.
-After authentication, enter the user ID you want to chat with in the Chat partner ID field. Both browsers compute the same deterministic conversation id using the two IDs, fetch the existing history, and subscribe to /topic/conversations/{conversationId}.
-Send a message—if the conversation does not exist yet, the backend creates it the first time either participant posts and links both existing users.
+Steps to Run : 
+
+1. Open the React app (e.g. npm run dev → http://localhost:3000).
+2. Register a new account or sign in with an existing numeric user ID and password.
+3. After authentication, enter the user ID you want to chat with in the Chat partner ID field.
+4. Both user browsers, fetch the existing chat history, and subscribe to /topic/conversations/{conversationId}  [ompute the same deterministic conversation id using the two IDs]
 
 
 Application Design Notes : 
