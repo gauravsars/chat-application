@@ -131,6 +131,15 @@ The development server proxies API calls to `http://localhost:8080` and expects 
 
 The schema ensures third normal form by separating user identities, conversation metadata, and messages, while using a junction table for participants.
 
+
+## Scaling Considerations
+
+Introduction of load balancer for directing traffic to multiple web socket server nodes 
+
+<img width="629" height="278" alt="image" src="https://github.com/user-attachments/assets/9dd8917c-1305-4538-a2aa-40c08e47c223" />
+
+
+
 ## Sample Nginx Configuration
 
 ```nginx
@@ -158,7 +167,7 @@ server {
 }
 ```
 
-## Scaling Considerations
+
 
 * Enable sticky sessions in the load balancer if you scale the Spring Boot nodes horizontally, or externalize the STOMP broker (e.g., RabbitMQ) for full statelessness.
 * Tune `spring.datasource.hikari.maximum-pool-size` to accommodate database load for 1,000 users.
