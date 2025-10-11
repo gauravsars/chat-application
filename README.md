@@ -135,8 +135,8 @@ server {
 
 
 
-* Enable sticky sessions in the load balancer if you scale the Spring Boot nodes horizontally, or externalize the STOMP broker (e.g., RabbitMQ) for full statelessness.
-* Tune `spring.datasource.hikari.maximum-pool-size` to accommodate database load for 1,000 users.
-
+* Introduce Load Balancer and configure it with the multi nodes of websocket server.
+* Tune `spring.datasource.hikari.maximum-pool-size` to accommodate database load for 1,0000+ chat application users.
+*Indexing on messages table for fast retrival of messages based on userIDs interacting.
 
 
