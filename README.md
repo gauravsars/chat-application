@@ -14,9 +14,9 @@ Registration For New User
 <img width="397" height="278" alt="image" src="https://github.com/user-attachments/assets/2f89c4cf-2adb-40cc-8f97-86e75aa6589f" />
 
 
-2. After authentication, enter the user ID you want to chat with in the Chat partner ID field. One To One chat (Till last one month) with Particular selected UserID
+2. After authentication, enter the user ID you want to chat with in the Chat partner ID field. Previous history of chat is fetched Till last one month.
 
-3. Both user browsers, fetch the existing chat history, and subscribe to /topic/conversations/{conversationId}  [ompute the same deterministic conversation id using the two IDs]
+3. Both user browsers, fetch the existing chat history if both have logged in and connected to the web socket server.
    
 userID : 3
 
@@ -25,8 +25,6 @@ userID : 3
 userID : 4
 
 <img width="295" height="347" alt="image" src="https://github.com/user-attachments/assets/818d4713-33ba-495a-a386-17be009c9c24" />
-
-
 
 
 
