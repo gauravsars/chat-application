@@ -4,6 +4,8 @@ Solution Provided For Below Business/User Requirement :
 
 Login To Chat System
 
+1. Open the React app (e.g. npm run dev → http://localhost:3000).
+   
 <img width="398" height="245" alt="image" src="https://github.com/user-attachments/assets/9dce07fd-88f7-4f65-8237-34315b8cb2e3" />
 
 
@@ -12,20 +14,18 @@ Registration For New User
 <img width="397" height="278" alt="image" src="https://github.com/user-attachments/assets/2f89c4cf-2adb-40cc-8f97-86e75aa6589f" />
 
 
-One To One chat (Till last one month) with Particular selected UserID
+2. After authentication, enter the user ID you want to chat with in the Chat partner ID field. One To One chat (Till last one month) with Particular selected UserID
 
+3. Both user browsers, fetch the existing chat history, and subscribe to /topic/conversations/{conversationId}  [ompute the same deterministic conversation id using the two IDs]
+   
 userID : 3
+
 <img width="416" height="463" alt="image" src="https://github.com/user-attachments/assets/de922f1f-0266-4eca-9373-9c58881a99d7" />
 
 userID : 4
+
 <img width="295" height="347" alt="image" src="https://github.com/user-attachments/assets/818d4713-33ba-495a-a386-17be009c9c24" />
 
-Steps to Run : 
-
-1. Open the React app (e.g. npm run dev → http://localhost:3000).
-2. Register a new account or sign in with an existing numeric user ID and password.
-3. After authentication, enter the user ID you want to chat with in the Chat partner ID field.
-4. Both user browsers, fetch the existing chat history, and subscribe to /topic/conversations/{conversationId}  [ompute the same deterministic conversation id using the two IDs]
 
 
 
