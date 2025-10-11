@@ -59,8 +59,12 @@ public class ChatService {
         Conversation conversation = conversationRepository.findById(conversationId)
                 .orElseGet(() -> createDirectConversation(conversationId, sender, recipient));
 
-        conversation.getParticipants().add(sender);
-        conversation.getParticipants().add(recipient);
+        if (!conversation.getParticipants().contains(sender)) {
+            conversation.getParticipants().add(sender);
+        }
+        if (!conversation.getParticipants().contains(recipient)) {
+            conversation.getParticipants().add(recipient);
+        }
 
         Message message = new Message(conversation, sender, content);
         Message saved = messageRepository.save(message);
