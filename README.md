@@ -40,31 +40,22 @@ For 1000 to 10000 users with 10k-20k messages per day single web socket server i
                                           +--> Nginx (reverse proxy / load balancer)  [If required can be plugged] For users  >  10000 (Nginx not required)
 ```
 
-* **Backend:** Spring Boot 3, exposing REST endpoints for history and STOMP over WebSocket for live chat.
-* **Frontend:** React 18 single-page app bootstrapped with Vite.
-* **Database:** PostgreSQL with normalized tables for `users`, `conversations`, `conversation_participants`, and `messages` and archived_messages [ single db is sufficient for 10k users ]
+* **Backend:** Spring Boot 3, Spring Security
+* **Frontend:** React 18 with Vite.
+* **Database:** PostgreSQL
 * **WebSocket:** A single STOMP endpoint (`/ws-chat`) handles all socket connections;
-* **Load Balancing:** An example Nginx configuration is provided m but not required for the current scope.
 
 ## Backend (Spring Boot)
-
-Located in [`server/`](server/). Key features:
 
 * Entities for users, conversations, and messages with normalized relationships.
 * REST endpoint to fetch conversation history (`/api/conversations/{id}/messages`).
 * Authentication endpoints for registering (`POST /api/auth/register`) and logging in (`POST /api/auth/login`) users with numeric IDs and passwords.
 * WebSocket controller that persists incoming messages, ensures both participants already exist, and broadcasts them to subscribers via `/topic/conversations/{id}`.
-* Actuator endpoints enabled for health checks in a load-balanced environment.
+
 
 ### Configure PostgreSQL
 
-1. **Start PostgreSQL** – ensure a PostgreSQL server is running. A quick local option is Docker:
-
-   ```bash
-   docker run --name chat-postgres -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres:15
-   ```
-
-2. **Create database & user** – connect with `psql` (or any SQL client) and create a dedicated database and login role:
+1. **Create database & user** – connect with `psql` (or any SQL client) and create a dedicated database and login role:
 
    ```sql
    CREATE DATABASE chatapp;
@@ -94,14 +85,6 @@ npm run dev
 
 The development server proxies API calls to `http://localhost:8080` and expects the WebSocket endpoint at `ws://localhost:8080/ws-chat`.
 
-### Starting a direct conversation
-
-1. Open the React app (e.g. `npm run dev` → http://localhost:3000).
-2. Register a new account or sign in with an existing numeric user ID and password.
-3. After authentication, enter the user ID you want to chat with in the **Chat partner ID** field. Both browsers compute the same deterministic conversation id using the two IDs, fetch the existing history, and subscribe to `/topic/conversations/{conversationId}`.
-4. Send a message—if the conversation does not exist yet, the backend creates it the first time either participant posts and links both existing users.
-
-> Conversation identifiers use the [Cantor pairing function](https://en.wikipedia.org/wiki/Pairing_function#Cantor_pairing_function): `((a + b) * (a + b + 1)) / 2 + max(a, b)` where `a` and `b` are the two user IDs. This guarantees both parties derive the same conversation topic regardless of who starts the chat.
 
 ## Database Schema
 
@@ -111,8 +94,6 @@ The development server proxies API calls to `http://localhost:8080` and expects 
 | `conversations` | `id` (PK), `title`, `created_at` |
 | `conversation_participants` | `conversation_id` (FK), `user_id` (FK) |
 | `messages` | `id` (PK), `conversation_id` (FK), `sender_id` (FK), `content`, `sent_at` |
-
-The schema ensures third normal form by separating user identities, conversation metadata, and messages, while using a junction table for participants.
 
 
 ## Scaling Considerations
