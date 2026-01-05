@@ -59,28 +59,6 @@ Tech - Stack
    CREATE USER chatapp WITH PASSWORD 'secret';
    GRANT ALL PRIVILEGES ON DATABASE chatapp TO chatapp;
 
-
-### Authentication Flow
-
-1. **Register** – send `POST /api/auth/register` with a numeric `userId`, `password`, and optional `displayName`. Passwords are stored using BCrypt hashing.
-2. **Login** – send `POST /api/auth/login` with the same `userId`/`password` pair to retrieve the user profile for the session.
-3. **Messaging** – only authenticated users can publish chat messages; the backend rejects WebSocket payloads from unknown user IDs to avoid creating accounts implicitly.
-
-## Frontend (React + Vite)
-
-Located in [`client/`](client/). The SPA provides a login/registration screen, connects to the WebSocket endpoint, and streams messages for whichever two user IDs you select after signing in.
-
-Run locally:
-
-```bash
-cd client
-npm install
-npm run dev
-```
-
-The development server proxies API calls to `http://localhost:8080` and expects the WebSocket endpoint at `ws://localhost:8080/ws-chat`.
-
-
 ## Database Schema
 
 | Table | Columns |
